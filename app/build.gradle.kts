@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.wcsm.agiledex"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.wcsm.agiledex"
@@ -62,12 +62,23 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // System UI Controller
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
+
+    // Lifecycle Compose
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     kapt("com.google.dagger:hilt-compiler:2.48")
+
+    // Coil Compose
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
