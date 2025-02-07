@@ -10,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.wcsm.agiledex.ui.theme.AgileDexTheme
-import com.wcsm.agiledex.ui.theme.PrimaryColor
-import com.wcsm.agiledex.ui.view.PokemonView
+import com.wcsm.agiledex.presentation.ui.theme.AgileDexTheme
+import com.wcsm.agiledex.presentation.ui.theme.PrimaryColor
+import com.wcsm.agiledex.presentation.ui.view.PokemonView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

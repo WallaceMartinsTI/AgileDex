@@ -1,4 +1,4 @@
-package com.wcsm.agiledex.ui.components
+package com.wcsm.agiledex.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,10 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,14 +35,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.wcsm.agiledex.domain.model.PokemonDetails
 import com.wcsm.agiledex.domain.model.PokemonStats
-import com.wcsm.agiledex.ui.theme.AgileDexTheme
-import com.wcsm.agiledex.ui.theme.DarkGrayColor
-import com.wcsm.agiledex.ui.theme.PokemonStatsAttackColor
-import com.wcsm.agiledex.ui.theme.PokemonStatsDefenseColor
-import com.wcsm.agiledex.ui.theme.PokemonStatsExpColor
-import com.wcsm.agiledex.ui.theme.PokemonStatsHpColor
-import com.wcsm.agiledex.ui.theme.PokemonStatsSpeedColor
-import com.wcsm.agiledex.ui.theme.PrimaryColor
+import com.wcsm.agiledex.presentation.ui.theme.AgileDexTheme
+import com.wcsm.agiledex.presentation.ui.theme.DarkGrayColor
+import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsAttackColor
+import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsDefenseColor
+import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsExpColor
+import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsHpColor
+import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsSpeedColor
+import com.wcsm.agiledex.presentation.ui.theme.PrimaryColor
 import com.wcsm.agiledex.utils.getPokemonTypeColor
 import kotlinx.coroutines.delay
 
@@ -54,6 +50,7 @@ import kotlinx.coroutines.delay
 fun PokemonDetails(
     pokemonDetails: PokemonDetails?,
     pokemonImageUrl: String,
+    pokemonCardColor: Color,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit
 ) {
@@ -85,7 +82,7 @@ fun PokemonDetails(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp))
-                    .background(getPokemonTypeColor(pokemonDetails.types[0])),
+                    .background(pokemonCardColor),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
@@ -225,6 +222,7 @@ private fun PokemonDetailsPreview() {
         PokemonDetails(
             pokemonDetails = pokemonDetails,
             pokemonImageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+            pokemonCardColor = getPokemonTypeColor(pokemonDetails.types[0], Color.White),
             onDismiss = {}
         )
     }
@@ -421,7 +419,7 @@ private fun PokemonTypeContainer(
     Box(
         Modifier
             .clip(RoundedCornerShape(15.dp))
-            .background(getPokemonTypeColor(pokemonType))
+            .background(getPokemonTypeColor(pokemonType, DarkGrayColor))
             .padding(horizontal = 12.dp)
     ) {
         Text(

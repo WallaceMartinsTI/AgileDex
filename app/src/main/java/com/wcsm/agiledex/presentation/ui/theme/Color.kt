@@ -1,4 +1,4 @@
-package com.wcsm.agiledex.ui.theme
+package com.wcsm.agiledex.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

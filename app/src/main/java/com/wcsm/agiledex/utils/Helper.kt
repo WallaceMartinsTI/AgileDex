@@ -6,8 +6,8 @@ fun capitalizeFirstLetter(text: String) : String {
     return text.lowercase().replaceFirstChar { it.uppercase() }
 }
 
-fun getPokemonTypeColor(type: String): Color {
-    return when (type.lowercase()) {
+fun getPokemonTypeColor(type: String?, defaultColor: Color): Color {
+    return when (type?.lowercase()) {
         "normal" -> Color(0xFFBBB86C)
         "fighting" -> Color(0xFFE03028)
         "flying" -> Color(0xFF9D7CFA)
@@ -29,6 +29,6 @@ fun getPokemonTypeColor(type: String): Color {
         "stellar" -> Color(0xFFFFA6B9)
         "shadow" -> Color(0xFF464646)
         "unknown" -> Color(0xFF60C2B0)
-        else -> Color.White.copy(alpha = 0.85f)
+        else -> defaultColor
     }
 }

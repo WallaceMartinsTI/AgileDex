@@ -68,6 +68,9 @@ dependencies {
     // Lifecycle Compose
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
+    // Compose Paging
+    implementation("androidx.paging:paging-compose:3.3.0-alpha05")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
@@ -79,6 +82,9 @@ dependencies {
 
     // Coil Compose
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Pallete API
+    implementation("androidx.palette:palette:1.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

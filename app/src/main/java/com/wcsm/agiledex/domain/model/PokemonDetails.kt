@@ -1,5 +1,9 @@
 package com.wcsm.agiledex.domain.model
 
+import androidx.compose.ui.graphics.Color
+import com.wcsm.agiledex.presentation.ui.theme.DarkGrayColor
+import com.wcsm.agiledex.utils.getPokemonTypeColor
+
 data class PokemonDetails(
     val id: Int,
     val order: Int,
@@ -8,5 +12,6 @@ data class PokemonDetails(
     val types: List<String>,
     val weight: Int,
     val height: Int,
-    val baseStats: List<PokemonStats>
+    val baseStats: List<PokemonStats>,
+    var typeColor: Color = getPokemonTypeColor(null, DarkGrayColor)
 )

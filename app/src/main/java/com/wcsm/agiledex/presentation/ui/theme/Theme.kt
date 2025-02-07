@@ -1,4 +1,4 @@
-package com.wcsm.agiledex.ui.theme
+package com.wcsm.agiledex.presentation.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

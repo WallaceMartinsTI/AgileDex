@@ -1,4 +1,4 @@
-package com.wcsm.agiledex.ui.components
+package com.wcsm.agiledex.presentation.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.wcsm.agiledex.domain.model.Pokemon
-import com.wcsm.agiledex.ui.theme.AgileDexTheme
+import com.wcsm.agiledex.presentation.ui.theme.AgileDexTheme
 
 
 @Composable
