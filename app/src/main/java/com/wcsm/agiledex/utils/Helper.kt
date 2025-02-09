@@ -1,9 +1,17 @@
 package com.wcsm.agiledex.utils
 
+import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.palette.graphics.Palette
 
 fun capitalizeFirstLetter(text: String) : String {
     return text.lowercase().replaceFirstChar { it.uppercase() }
+}
+
+fun getDominantColor(bitmap: Bitmap, defaultColor: Int = Color.Gray.toArgb()): Int {
+    val convertedBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+    return Palette.from(convertedBitmap).generate().getDominantColor(defaultColor)
 }
 
 fun getPokemonTypeColor(type: String?, defaultColor: Color): Color {

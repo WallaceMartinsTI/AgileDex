@@ -1,4 +1,4 @@
-package com.wcsm.agiledex.mappers
+package com.wcsm.agiledex.domain.mapper
 
 import com.wcsm.agiledex.data.remote.api.dto.pokemonDetails.PokemonDetailsDTO
 import com.wcsm.agiledex.data.remote.api.dto.pokemonDetails.Stat

@@ -1,10 +1,12 @@
 package com.wcsm.agiledex.presentation.ui.view
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wcsm.agiledex.domain.model.Pokemon
 import com.wcsm.agiledex.domain.model.PokemonDetails
 import com.wcsm.agiledex.domain.model.Response
+import com.wcsm.agiledex.domain.usecase.GetNextPokemonPageUseCase
 import com.wcsm.agiledex.domain.usecase.GetPokemonDetailsByNameUseCase
 import com.wcsm.agiledex.domain.usecase.GetPokemonListUseCase
 import com.wcsm.agiledex.presentation.model.PokemonOperationType
@@ -15,22 +17,34 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PokemonViewModel @Inject constructor(
     private val getPokemonListUseCase: GetPokemonListUseCase,
-    private val getPokemonDetailsByNameUseCase: GetPokemonDetailsByNameUseCase
+    private val getPokemonDetailsByNameUseCase: GetPokemonDetailsByNameUseCase,
+    private val getNextPokemonPageUseCase: GetNextPokemonPageUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState<PokemonOperationType>())
     val uiState = _uiState.asStateFlow()
+
+    private val _originalPokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
+    private val originalPokemonList = _originalPokemonList.asStateFlow()
 
     private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
     val pokemonList = _pokemonList.asStateFlow()
 
     private val _pokemonDetails = MutableStateFlow<PokemonDetails?>(null)
     val pokemonDetails = _pokemonDetails.asStateFlow()
+
+    private val _isFetching = MutableStateFlow(false)
+    val isFetching = _isFetching.asStateFlow()
+
+    private var offset = 0
+    private var limit = 30
+    private var maxPokemons = 300
 
     init {
         getPokemons()
@@ -44,13 +58,23 @@ class PokemonViewModel @Inject constructor(
         _pokemonDetails.value = null
     }
 
-    private fun getPokemons() {
+    fun getPokemonsByName(pokemonName: String) {
+        if(pokemonName.isEmpty()) {
+            _pokemonList.value = originalPokemonList.value
+        } else {
+            _pokemonList.value = originalPokemonList.value.filter {
+                it.name.contains(pokemonName, ignoreCase = true)
+            }
+        }
+    }
+
+    fun getPokemons() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = uiState.value.copy(
                 pokemonOperationType = PokemonOperationType.GET_POKEMONS
             )
 
-            getPokemonListUseCase().collect { getPokemonListResponse ->
+            getPokemonListUseCase(offset, limit).collect { getPokemonListResponse ->
                 when(getPokemonListResponse) {
                     is Response.Loading -> {
                         _uiState.value = uiState.value.copy(
@@ -64,42 +88,10 @@ class PokemonViewModel @Inject constructor(
                         )
                     }
                     is Response.Success -> {
-                        val updatedPokemonList = mutableListOf<Pokemon>()
+                        _pokemonList.value = getPokemonListResponse.data
+                        _originalPokemonList.value = getPokemonListResponse.data
+                        offset += limit
 
-                        getPokemonListResponse.data.map { pokemon ->
-                            getPokemonDetailsByNameUseCase(pokemon.name).collect { pokemonDetailsResponse ->
-                                when(pokemonDetailsResponse) {
-                                    is Response.Loading -> {
-                                        _uiState.value = uiState.value.copy(
-                                            isLoading = true
-                                        )
-                                    }
-                                    is Response.Error -> {
-                                        _uiState.value = uiState.value.copy(
-                                            isLoading = false,
-                                            error = pokemonDetailsResponse.message
-                                        )
-                                    }
-                                    is Response.Success -> {
-                                        val pokemonMainType = pokemonDetailsResponse.data?.types
-                                        if(!pokemonMainType.isNullOrEmpty()) {
-                                            updatedPokemonList.add(
-                                                pokemon.copy(
-                                                    typeColor = getPokemonTypeColor(
-                                                        pokemonMainType[0],
-                                                        DarkGrayColor
-                                                    )
-                                                )
-                                            )
-                                        } else {
-                                            updatedPokemonList.add(pokemon)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        _pokemonList.value = updatedPokemonList
                         _uiState.value = uiState.value.copy(
                             isLoading = false,
                             success = true
@@ -107,6 +99,43 @@ class PokemonViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun getNextPokemonsPage() {
+        Log.i("#-# TESTE #-#", "++ GETTING MORE POKEMONS ++")
+        if(isFetching.value || offset >= maxPokemons) return
+
+        _isFetching.value = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            getNextPokemonPageUseCase(offset, limit).collect { getNextPokemonListResponse ->
+                when(getNextPokemonListResponse) {
+                    is Response.Loading -> {
+                        _uiState.value = uiState.value.copy(
+                            isLoading = true
+                        )
+                    }
+                    is Response.Error -> {
+                        _uiState.value = uiState.value.copy(
+                            isLoading = false,
+                            error = getNextPokemonListResponse.message
+                        )
+                    }
+                    is Response.Success -> {
+                        _originalPokemonList.value = pokemonList.value + getNextPokemonListResponse.data
+                        _pokemonList.value =  pokemonList.value + getNextPokemonListResponse.data
+                        offset += limit
+
+                        _uiState.value = uiState.value.copy(
+                            isLoading = false,
+                            success = true
+                        )
+                    }
+                }
+            }
+
+            _isFetching.value = false
         }
     }
 
@@ -116,8 +145,8 @@ class PokemonViewModel @Inject constructor(
                 pokemonOperationType = PokemonOperationType.GET_POKEMON_DETAILS
             )
 
-            getPokemonDetailsByNameUseCase(pokemonName).collect { result ->
-                when(result) {
+            getPokemonDetailsByNameUseCase(pokemonName).collect { getPokemonDetailsResponse ->
+                when(getPokemonDetailsResponse) {
                     is Response.Loading -> {
                         _uiState.value = uiState.value.copy(
                             isLoading = true
@@ -126,19 +155,11 @@ class PokemonViewModel @Inject constructor(
                     is Response.Error -> {
                         _uiState.value = uiState.value.copy(
                             isLoading = false,
-                            error = result.message
+                            error = getPokemonDetailsResponse.message
                         )
                     }
                     is Response.Success -> {
-                        val pokemonDetailsResult = result.data?.copy(
-                            typeColor = if(result.data.types.isNotEmpty()) {
-                                getPokemonTypeColor(result.data.types[0], DarkGrayColor)
-                            } else {
-                                getPokemonTypeColor(null, DarkGrayColor)
-                            }
-                        )
-
-                        _pokemonDetails.value = pokemonDetailsResult
+                        _pokemonDetails.value = getPokemonDetailsResponse.data
 
                         _uiState.value = uiState.value.copy(
                             isLoading = false,
@@ -149,41 +170,4 @@ class PokemonViewModel @Inject constructor(
             }
         }
     }
-
-
-    /*fun getPokemons() {
-        viewModelScope.launch(Dispatchers.IO) {
-            //delay(1500)
-            val response = pokemonRepository.getPokemons()
-
-            if (response.isNotEmpty()) {
-                val updatedPokemonList = response.map { pokemon ->
-                    val pokemonTypes = pokemonRepository.getPokemonDetailsByName(pokemon.name)?.types
-                    if (!pokemonTypes.isNullOrEmpty()) {
-                        pokemon.copy(typeColor = getPokemonTypeColor(pokemonTypes[0]))
-                    } else {
-                        pokemon
-                    }
-                }
-
-                _pokemonList.value = updatedPokemonList
-            }
-
-            if (response.isEmpty()) {
-                delay(5000)
-                if (_pokemonList.value.isEmpty()) {
-                    _errorState.value = true
-                }
-            }
-
-            _isLoading.value = false
-        }
-    }
-
-    fun getPokemonDetails(pokemonName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = pokemonRepository.getPokemonDetailsByName(pokemonName)
-            _pokemonDetails.value = response
-        }
-    }*/
 }

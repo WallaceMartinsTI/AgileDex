@@ -18,6 +18,8 @@ val OnSurfaceColor = Color(0xFFCFCFCF)
 val ErrorColor = Color(0xFFD32F2F)
 
 val DarkGrayColor = Color(0xFF2B292C)
+val WhiteIceColor = Color(0xFFF6FCFF)
+val White06Color = Color.White.copy(0.6f)
 
 val PokemonStatsHpColor = Color.Red
 val PokemonStatsAttackColor = Color(0xFFFFEB3B)

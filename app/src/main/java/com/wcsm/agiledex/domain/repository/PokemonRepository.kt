@@ -6,6 +6,6 @@ import com.wcsm.agiledex.domain.model.Response
 import kotlinx.coroutines.flow.Flow
 
 interface PokemonRepository {
-    suspend fun getPokemons(): Flow<Response<List<Pokemon>>>
+    suspend fun getPokemons(offset: Int, limit: Int): Flow<Response<List<Pokemon>>>
     suspend fun getPokemonDetailsByName(pokemonName: String): Flow<Response<PokemonDetails?>>
 }

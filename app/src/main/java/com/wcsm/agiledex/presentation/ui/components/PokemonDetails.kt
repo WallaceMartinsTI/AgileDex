@@ -1,5 +1,6 @@
 package com.wcsm.agiledex.presentation.ui.components
 
+import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +24,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,19 +49,26 @@ import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsExpColor
 import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsHpColor
 import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsSpeedColor
 import com.wcsm.agiledex.presentation.ui.theme.PrimaryColor
+import com.wcsm.agiledex.presentation.ui.theme.WhiteIceColor
+import com.wcsm.agiledex.utils.getDominantColor
 import com.wcsm.agiledex.utils.getPokemonTypeColor
-import kotlinx.coroutines.delay
+import com.wcsm.agiledex.utils.toVibrantColor
 
 @Composable
 fun PokemonDetails(
     pokemonDetails: PokemonDetails?,
     pokemonImageUrl: String,
-    pokemonCardColor: Color,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit
 ) {
-    LaunchedEffect(Unit) {
-        delay(1500)
+    var dominantColor by remember { mutableStateOf(Color.Gray) }
+
+    var pokemonStatsList: List<PokemonStats> by remember { mutableStateOf(emptyList()) }
+
+    LaunchedEffect(pokemonDetails) {
+        if(pokemonDetails != null) {
+            pokemonStatsList = pokemonDetails.baseStats + PokemonStats("experience", Pair(pokemonDetails.baseExperience, 1000))
+        }
     }
 
     if(pokemonDetails == null) {
@@ -82,7 +95,15 @@ fun PokemonDetails(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp))
-                    .background(pokemonCardColor),
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                WhiteIceColor,
+                                dominantColor.toVibrantColor()
+                            )
+                        )
+                    )
+                ,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
@@ -93,13 +114,14 @@ fun PokemonDetails(
                 ) {
                     Text(
                         text = "#${pokemonDetails.order.toString().padStart(3, '0')}",
-                        color = Color.Black
+                        color = DarkGrayColor,
+                        fontWeight = FontWeight.Bold
                     )
 
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close icon.",
-                        tint = Color.Black,
+                        tint = DarkGrayColor,
                         modifier = Modifier
                             .size(32.dp)
                             .clip(RoundedCornerShape(15.dp))
@@ -110,7 +132,11 @@ fun PokemonDetails(
                 AsyncImage(
                     model = pokemonImageUrl,
                     contentDescription = null,
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(120.dp),
+                    onSuccess = { imageState->
+                        val bitmap = (imageState.result.drawable as BitmapDrawable).bitmap
+                        dominantColor = Color(getDominantColor(bitmap))
+                    }
                 )
                 /*Image(
                     painter = painterResource(R.drawable.ic_launcher_background),
@@ -181,7 +207,7 @@ fun PokemonDetails(
             )
 
             PokemonStatsContainer(
-                pokemonStatsList = pokemonDetails.baseStats,
+                pokemonStatsList = pokemonStatsList,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
@@ -222,7 +248,6 @@ private fun PokemonDetailsPreview() {
         PokemonDetails(
             pokemonDetails = pokemonDetails,
             pokemonImageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-            pokemonCardColor = getPokemonTypeColor(pokemonDetails.types[0], Color.White),
             onDismiss = {}
         )
     }
@@ -364,7 +389,7 @@ fun PokemonStatsContainer(
             "attack" to PokemonStatsAttackColor,
             "defense" to PokemonStatsDefenseColor,
             "speed" to PokemonStatsSpeedColor,
-            "exp" to PokemonStatsExpColor
+            "experience" to PokemonStatsExpColor
         )
 
         pokemonStatsList.forEach {
@@ -441,8 +466,9 @@ private fun PokemonTypeContainerPreview() {
 private fun getShortStatus(status: String) : String {
     return when(status) {
         "attack" -> "atk"
-        "defense" -> "atk"
+        "defense" -> "def"
         "speed" -> "spd"
+        "experience" -> "exp"
         else -> status
     }
 }

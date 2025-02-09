@@ -5,8 +5,8 @@ import com.wcsm.agiledex.domain.model.Pokemon
 import com.wcsm.agiledex.domain.model.PokemonDetails
 import com.wcsm.agiledex.domain.model.Response
 import com.wcsm.agiledex.domain.repository.PokemonRepository
-import com.wcsm.agiledex.mappers.toPokemon
-import com.wcsm.agiledex.mappers.toPokemonDetails
+import com.wcsm.agiledex.domain.mapper.toPokemon
+import com.wcsm.agiledex.domain.mapper.toPokemonDetails
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,17 +15,19 @@ import javax.inject.Inject
 class PokemonRepositoryImpl @Inject constructor(
     private val pokeAPIService: PokeAPIService
 ) : PokemonRepository {
-    private val actualOffsetPage = 0
-
-    override suspend fun getPokemons(): Flow<Response<List<Pokemon>>> = flow {
+    override suspend fun getPokemons(offset: Int, limit: Int): Flow<Response<List<Pokemon>>> = flow {
         try {
             emit(Response.Loading)
-
-            val response = pokeAPIService.getPokemons(actualOffsetPage, 20) // 20, I'm using 5 for test
+            delay(2000)
+            val response = pokeAPIService.getPokemons(offset, limit)
             if(response.isSuccessful && response.body() != null) {
                 val pokemonList = response.body()?.results
                 if(pokemonList != null) {
-                    emit(Response.Success(pokemonList.map { it.toPokemon() }))
+                    if(pokemonList.isEmpty()) {
+                        emit(Response.Error("Error getting pokemon list: pokemon list returned is empty."))
+                    } else {
+                        emit(Response.Success(pokemonList.map { it.toPokemon() }))
+                    }
                 } else {
                     emit(Response.Error("Error getting pokemon list: null pokemon list."))
                 }
@@ -44,7 +46,7 @@ class PokemonRepositoryImpl @Inject constructor(
         try {
             emit(Response.Loading)
 
-            delay(2000)
+            //delay(2000)
             val response = pokeAPIService.getPokemonDetails(pokemonName)
             if(response.isSuccessful && response.body() != null) {
                 val pokemonDetails = response.body()
@@ -61,34 +63,4 @@ class PokemonRepositoryImpl @Inject constructor(
             emit(Response.Error("Unknown error while fetching pokemon details, please inform the administrator."))
         }
     }
-
-
-    /*override suspend fun getPokemons(): List<Pokemon> {
-        try {
-            val result = pokeAPIService.getPokemons(actualOffsetPage, 20)
-            if(result.isSuccessful && result.body() != null) {
-                val pokemonList = result.body()?.results
-                if(pokemonList != null) {
-                    return pokemonList.map { it.toPokemon() }
-                }
-            }
-        } catch (error: Exception) {
-            error.printStackTrace()
-        }
-        return emptyList()
-    }
-
-    override suspend fun getPokemonDetailsByName(pokemonName: String): PokemonDetails? {
-        try {
-            val result = pokeAPIService.getPokemonDetails(pokemonName)
-            if(result.isSuccessful && result.body() != null) {
-                val pokemonDetails = result.body()
-                if(pokemonDetails != null) return pokemonDetails.toPokemonDetails()
-            }
-        } catch (error: Exception) {
-            error.printStackTrace()
-        }
-
-        return null
-    }*/
 }

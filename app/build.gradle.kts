@@ -68,6 +68,9 @@ dependencies {
     // Lifecycle Compose
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
+    // Extended Icons
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
     // Compose Paging
     implementation("androidx.paging:paging-compose:3.3.0-alpha05")
 

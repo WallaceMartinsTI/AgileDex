@@ -3,6 +3,7 @@ package com.wcsm.agiledex.di
 import com.wcsm.agiledex.data.remote.api.PokeAPIService
 import com.wcsm.agiledex.domain.repository.PokemonRepository
 import com.wcsm.agiledex.data.remote.api.repository.PokemonRepositoryImpl
+import com.wcsm.agiledex.domain.usecase.GetNextPokemonPageUseCase
 import com.wcsm.agiledex.domain.usecase.GetPokemonDetailsByNameUseCase
 import com.wcsm.agiledex.domain.usecase.GetPokemonListUseCase
 import com.wcsm.agiledex.utils.Constants
@@ -51,5 +52,12 @@ object AppModule {
         pokemonRepository: PokemonRepository
     ): GetPokemonDetailsByNameUseCase {
         return GetPokemonDetailsByNameUseCase(pokemonRepository)
+    }
+
+    @Provides
+    fun provideGetNextPokemonPageUseCase(
+        pokemonRepository: PokemonRepository
+    ): GetNextPokemonPageUseCase {
+        return GetNextPokemonPageUseCase(pokemonRepository)
     }
 }
