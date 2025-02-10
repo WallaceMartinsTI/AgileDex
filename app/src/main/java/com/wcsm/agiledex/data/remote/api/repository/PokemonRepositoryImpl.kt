@@ -42,21 +42,10 @@ class PokemonRepositoryImpl @Inject constructor(
     override suspend fun getPokemonDetailsByName(
         pokemonName: String
     ): Flow<Response<PokemonDetails?>> = flow {
-        // for test error
-        var test = pokemonName
-
         try {
             emit(Response.Loading)
 
-            // For test error
-            if(pokemonName.lowercase() == "charmander") {
-                test = "kjkjkj"
-            }
-            val response = pokeAPIService.getPokemonDetails(test)
-
-
-            // Original
-            //val response = pokeAPIService.getPokemonDetails(pokemonName)
+            val response = pokeAPIService.getPokemonDetails(pokemonName)
             if(response.isSuccessful && response.body() != null) {
                 val pokemonDetails = response.body()
                 if(pokemonDetails != null) {

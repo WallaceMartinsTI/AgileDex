@@ -11,12 +11,10 @@ import com.wcsm.agiledex.data.remote.api.dto.pokemonDetails.Type
 import com.wcsm.agiledex.data.remote.api.dto.pokemonDetails.TypeX
 import com.wcsm.agiledex.data.remote.api.dto.pokemons.PokeAPIResponse
 import com.wcsm.agiledex.data.remote.api.dto.pokemons.PokemonDTO
-import com.wcsm.agiledex.domain.model.Pokemon
 import com.wcsm.agiledex.domain.model.Response
 import com.wcsm.agiledex.domain.repository.PokemonRepository
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Test
@@ -44,7 +42,7 @@ class PokemonRepositoryImplTest {
     }
 
     @Test
-    fun getPokemons_getPokemonsFromAPIWithValidData_returnSuccessWithPokemonsList() = runTest {
+    fun getPokemons_getPokemonsFromAPIWithValidData_returnSuccessWithPokemonList() = runTest {
         Mockito.`when`(pokeAPIService.getPokemons(anyInt(), anyInt())).thenReturn(
             retrofit2.Response.success(
                 PokeAPIResponse(
@@ -173,7 +171,8 @@ class PokemonRepositoryImplTest {
                        Type(slot=1, type= TypeX(name="grass", url="https://pokeapi.co/api/v2/type/12/")),
                        Type(slot=2, type=TypeX(name="poison", url="https://pokeapi.co/api/v2/type/4/"))
                    ),
-                   weight=69)
+                   weight=69
+                )
             )
         )
 
@@ -190,6 +189,31 @@ class PokemonRepositoryImplTest {
             assertThat(pokemonDetails).isNotNull()
 
             assertThat(pokemonDetails?.name).isEqualTo(pokemonName)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun getPokemonDetailsByName_getPokemonDetailsWithInvalidName_returnRequestFailedError() = runTest {
+        Mockito.`when`(pokeAPIService.getPokemonDetails(anyString())).thenReturn(
+            retrofit2.Response.error(
+                404,
+                "{ \"message\": \"\" }".toResponseBody("application/json".toMediaType())
+            )
+        )
+
+        val pokemonName = "kjkj"
+        pokemonRepository.getPokemonDetailsByName(pokemonName).test {
+            assertThat(awaitItem()).isInstanceOf(Response.Loading::class.java)
+
+            val pokemonDetailsResponse = awaitItem()
+
+            assertThat(pokemonDetailsResponse).isInstanceOf(Response.Error::class.java)
+
+            val pokemonDetailsNotFoundErrorMessage = (pokemonDetailsResponse as Response.Error).message
+
+            assertThat(pokemonDetailsNotFoundErrorMessage).isEqualTo("Error getting pokemon details: Request failed.")
 
             cancelAndIgnoreRemainingEvents()
         }

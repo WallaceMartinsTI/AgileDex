@@ -15,7 +15,7 @@ class GetNextPokemonPageUseCase @Inject constructor(
             pokemonRepository.getPokemons(offset, limit)
         } else {
             flow {
-                Response.Success<List<Pokemon>>(emptyList())
+                emit(Response.Success(emptyList()))
             }
         }
     }
