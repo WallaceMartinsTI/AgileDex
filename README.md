@@ -3,12 +3,46 @@
 
 ## 💻 Project
 
-AgileDex is an Android application that allows users to explore the world of Pokémon. The app retrieves data from the [PokéAPI](https://pokeapi.co/) and provides a paginated list of Pokémon with their basic details. Users can browse, filter, and check more detailed information about each Pokémon, including an image and various attributes.
+AgileDex is an Android application that allows users to explore the world of Pokémon. The app
+retrieves data from the [PokéAPI](https://pokeapi.co/) and provides a paginated list of Pokémon with
+their basic details. Users can browse, filter, and check more detailed information about each
+Pokémon, including an image and various attributes.
 
-<img
-src="./screenshot.PNG"
-alt="Shopper Rotas screenshot"
-/>
+<div align="center">
+    <table>
+      <tr>
+        <td>
+          <img src="./pokemon_view_light.png" alt="pokemon view light" width="450" height="600"/>
+        </td>
+        <td>
+          <img src="./pokemon_details_light.png" alt="pokemon detail light" width="450" height="600"/>
+        </td>
+<td>
+          <img src="./pokemon_view_dark.png" alt="pokemon view dark" width="450" height="600"/>
+        </td>
+        <td>
+          <img src="./pokemon_detail_dark.png" alt="pokemon detail dark" width="450" height="600"/>
+        </td>
+      </tr>
+<tr>
+        <td>
+          <img src="./splashscreen.png" alt="splash screen" width="450" height="600"/>
+        </td>
+        <td>
+          <img src="./pokemon_view_error.png" alt="pokemon view error" width="450" height="600"/>
+        </td>
+<td>
+          <img src="./pokemon_detail_error.png" alt="pokemon detail error" width="450" height="600"/>
+        </td>
+        <td>
+          <img src="./pokemon_view_no_filter_result.png" alt="pokemon view no filter result" width="450" height="600"/>
+        </td>
+      </tr>
+<tr>
+    </table>
+
+</div>
+<br/>
 
 </h1>
 
@@ -21,9 +55,10 @@ alt="Shopper Rotas screenshot"
 - **Error Handling:** Handles API failures gracefully.
 - **Ui Mode:** Supports Light and Dark theme.
 
-## Future Improvements
+## 🎯 Future Improvements
 
-- **Improve network data cache:** Handle internet data caching via room database and if necessary save some data in sharedpreferences;
+- **Improve network data cache:** Handle internet data caching via room database and if necessary
+  save some data in sharedpreferences;
 - **Ui:** Improve UI with animations and trasitions;
 - **Tests:** Write more tests to make the app more reliable;
 - **General Review**: Make a complete review and small improvements;
@@ -42,12 +77,23 @@ The application was developed for the Android platform using the following techn
 ## 💿 Installation
 
 1. Clone this repository:
+
 ```bash
 git clone https://github.com/WallaceMartinsTI/AgileDex.git
 ```
 
+2. Open the project in Android Studio.
+3.
+4. Build and run the application on an emulator or physical device.
+
 ## 🧾 Final Notes
 
-Developing AgileDex helped me gain more experience with API consumption, dealing with theme differences and my overall development skills. I was pleased with the result achieved and I want to implement future improvements as soon as possible.
+The app has been tested on the following devices:
+- Xiaomi Redmi Note 13 (Physical Device)
+- Pixel 8 Pro (AVD - Android Virtual Device | Android API 35 x86_64)
+
+Developing AgileDex helped me gain more experience with API consumption, dealing with theme
+differences and my overall development skills. I was pleased with the result achieved and I want to
+implement future improvements as soon as possible.
 
 <br />
