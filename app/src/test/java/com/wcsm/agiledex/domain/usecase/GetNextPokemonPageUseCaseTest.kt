@@ -78,13 +78,6 @@ class GetNextPokemonPageUseCaseTest {
             Pokemon(id = "3", name = "Squirtle", spriteUrl = "https://pokeapi.co/api/v2/pokemon/3/")
         )
 
-        Mockito.`when`(pokemonRepository.getPokemons(anyInt(), anyInt())).thenReturn(
-            flow {
-                emit(Response.Loading)
-                emit(Response.Success(emptyList()))
-            }
-        )
-
         getNextPokemonPageUseCase(500, 30).test {
             val firstItemEmitted = awaitItem()
             assertThat(firstItemEmitted).isInstanceOf(Response.Success::class.java)

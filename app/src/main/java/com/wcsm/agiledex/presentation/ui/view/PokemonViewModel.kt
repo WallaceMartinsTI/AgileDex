@@ -1,6 +1,5 @@
 package com.wcsm.agiledex.presentation.ui.view
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wcsm.agiledex.domain.model.Pokemon
@@ -11,14 +10,10 @@ import com.wcsm.agiledex.domain.usecase.GetPokemonDetailsByNameUseCase
 import com.wcsm.agiledex.domain.usecase.GetPokemonListUseCase
 import com.wcsm.agiledex.presentation.model.PokemonOperationType
 import com.wcsm.agiledex.presentation.model.UiState
-import com.wcsm.agiledex.presentation.ui.theme.DarkGrayColor
-import com.wcsm.agiledex.utils.getPokemonTypeColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
