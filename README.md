@@ -53,13 +53,13 @@ Pokémon, including an image and various attributes.
 - **Search:** Allows filtering the list by pokémon name;
 - **Detail Screen:** Shows additional information and an image of the selected Pokémon;
 - **Error Handling:** Handles API failures gracefully.
-- **Ui Mode:** Supports Light and Dark theme.
+- **UI Mode:** Supports Light and Dark theme.
 
 ## 🎯 Future Improvements
 
 - **Improve network data cache:** Handle internet data caching via room database and if necessary
   save some data in sharedpreferences;
-- **Ui:** Improve UI with animations and trasitions;
+- **UI:** Improve UI with animations and trasitions;
 - **Tests:** Write more tests to make the app more reliable;
 - **General Review**: Make a complete review and small improvements;
 
@@ -83,7 +83,7 @@ git clone https://github.com/WallaceMartinsTI/AgileDex.git
 ```
 
 2. Open the project in Android Studio.
-3.
+
 4. Build and run the application on an emulator or physical device.
 
 ## 🧾 Final Notes
