@@ -1,5 +1,5 @@
 <h1 align="center">
-  <p align="center">Shopper Rotas</p>
+  <p align="center">Agile Dex</p>
 
 ## 💻 Project
 
@@ -12,30 +12,30 @@ Pokémon, including an image and various attributes.
     <table>
       <tr>
         <td>
-          <img src="./pokemon_view_light.png" alt="pokemon view light" width="450" height="600"/>
+          <img src="./pokemon_view_light.png" alt="pokemon view light" width="300" height="600"/>
         </td>
         <td>
-          <img src="./pokemon_details_light.png" alt="pokemon detail light" width="450" height="600"/>
+          <img src="./pokemon_details_light.png" alt="pokemon detail light" width="300" height="600"/>
         </td>
 <td>
-          <img src="./pokemon_view_dark.png" alt="pokemon view dark" width="450" height="600"/>
+          <img src="./pokemon_view_dark.png" alt="pokemon view dark" width="300" height="600"/>
         </td>
         <td>
-          <img src="./pokemon_detail_dark.png" alt="pokemon detail dark" width="450" height="600"/>
+          <img src="./pokemon_detail_dark.png" alt="pokemon detail dark" width="300" height="600"/>
         </td>
       </tr>
 <tr>
         <td>
-          <img src="./splashscreen.png" alt="splash screen" width="450" height="600"/>
+          <img src="./splashscreen.png" alt="splash screen" width="300" height="600"/>
         </td>
         <td>
-          <img src="./pokemon_view_error.png" alt="pokemon view error" width="450" height="600"/>
+          <img src="./pokemon_view_error.png" alt="pokemon view error" width="300" height="600"/>
         </td>
 <td>
-          <img src="./pokemon_detail_error.png" alt="pokemon detail error" width="450" height="600"/>
+          <img src="./pokemon_detail_error.png" alt="pokemon detail error" width="300" height="600"/>
         </td>
         <td>
-          <img src="./pokemon_view_no_filter_result.png" alt="pokemon view no filter result" width="450" height="600"/>
+          <img src="./pokemon_view_no_filter_result.png" alt="pokemon view no filter result" width="300" height="600"/>
         </td>
       </tr>
 <tr>
@@ -89,6 +89,7 @@ git clone https://github.com/WallaceMartinsTI/AgileDex.git
 ## 🧾 Final Notes
 
 The app has been tested on the following devices:
+
 - Xiaomi Redmi Note 13 (Physical Device)
 - Pixel 8 Pro (AVD - Android Virtual Device | Android API 35 x86_64)
 
