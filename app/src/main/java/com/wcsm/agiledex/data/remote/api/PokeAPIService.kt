@@ -8,7 +8,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PokeAPIService {
-    @GET("pokemon/")
+    @GET("pokemonz/")
     suspend fun getPokemons(
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,

@@ -62,6 +62,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // Splashscreen
+    implementation("androidx.core:core-splashscreen:1.0.0")
+
     // System UI Controller
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
 
@@ -90,6 +93,19 @@ dependencies {
     implementation("androidx.palette:palette:1.0.0")
 
     testImplementation(libs.junit)
+
+    // Mockito
+    testImplementation("org.mockito:mockito-core:5.7.0")
+
+    // Coroutine Testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    // Truth
+    implementation("com.google.truth:truth:1.4.2")
+
+    // Turbine for testing Flows
+    implementation("app.cash.turbine:turbine:1.2.0")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

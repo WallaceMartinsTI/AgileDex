@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,11 +38,10 @@ import com.wcsm.agiledex.presentation.ui.theme.OnSurfaceColor
 fun PokemonCard(
     pokemon: Pokemon,
     imageUrl: String,
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier,
     onPokemonCardClick: () -> Unit
 ) {
-    val isDarkTheme = isSystemInDarkTheme()
-
     var isImageLoading: Boolean? by remember { mutableStateOf(null) }
 
     ElevatedCard(
@@ -80,7 +80,8 @@ fun PokemonCard(
 
             Text(
                 text = pokemon.name,
-                color = Color.Black
+                color = Color.Black,
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }
@@ -109,6 +110,7 @@ private fun PokemonCardPreview() {
                     PokemonCard(
                         pokemon = pokemon,
                         imageUrl = pokemon.spriteUrl,
+                        isDarkTheme = false,
                         onPokemonCardClick = {}
                     )
                 }

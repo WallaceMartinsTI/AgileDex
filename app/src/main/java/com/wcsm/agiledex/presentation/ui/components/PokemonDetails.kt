@@ -1,13 +1,17 @@
 package com.wcsm.agiledex.presentation.ui.components
 
+import android.content.res.Configuration
 import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -33,9 +37,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -48,22 +56,28 @@ import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsDefenseColor
 import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsExpColor
 import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsHpColor
 import com.wcsm.agiledex.presentation.ui.theme.PokemonStatsSpeedColor
+import com.wcsm.agiledex.presentation.ui.theme.PoppinsFontFamily
 import com.wcsm.agiledex.presentation.ui.theme.PrimaryColor
+import com.wcsm.agiledex.presentation.ui.theme.White06Color
 import com.wcsm.agiledex.presentation.ui.theme.WhiteIceColor
 import com.wcsm.agiledex.utils.getDominantColor
 import com.wcsm.agiledex.utils.getPokemonTypeColor
 import com.wcsm.agiledex.utils.toVibrantColor
+import kotlinx.coroutines.delay
 
 @Composable
 fun PokemonDetails(
     pokemonDetails: PokemonDetails?,
     pokemonImageUrl: String,
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit
+    isDarkTheme: Boolean,
+    isError: Pair<Boolean, String>,
+    modifier: Modifier = Modifier
 ) {
     var dominantColor by remember { mutableStateOf(Color.Gray) }
 
     var pokemonStatsList: List<PokemonStats> by remember { mutableStateOf(emptyList()) }
+
+    val themeBasedMainColor = if(isDarkTheme) DarkGrayColor else WhiteIceColor
 
     LaunchedEffect(pokemonDetails) {
         if(pokemonDetails != null) {
@@ -71,152 +85,157 @@ fun PokemonDetails(
         }
     }
 
-    if(pokemonDetails == null) {
-        Column(
-            modifier = Modifier.fillMaxWidth().heightIn(80.dp).padding(bottom = 100.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .size(80.dp)
-                    .padding(16.dp),
-                color = PrimaryColor
+    Box(
+        modifier = Modifier.height(620.dp)
+    ) {
+        if(isError.first) {
+            ErrorContainer(
+                errorTitle = "There was a problem.",
+                errorMessage = isError.second,
+                modifier = Modifier.fillMaxSize()
             )
         }
-    } else {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(DarkGrayColor)
-                .padding(bottom = 100.dp)
-        ) {
+
+        if(pokemonDetails == null && !isError.first) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp))
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                WhiteIceColor,
-                                dominantColor.toVibrantColor()
-                            )
-                        )
-                    )
-                ,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(bottom = 100.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Row(
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(16.dp),
+                    color = PrimaryColor
+                )
+            }
+        }
+
+        if(pokemonDetails != null) {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(themeBasedMainColor)
+                    .padding(bottom = 80.dp)
+            ) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .clip(RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    WhiteIceColor,
+                                    dominantColor.toVibrantColor()
+                                )
+                            )
+                        )
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = "#${pokemonDetails.order.toString().padStart(3, '0')}",
                         color = DarkGrayColor,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close icon.",
-                        tint = DarkGrayColor,
+                        style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
-                            .size(32.dp)
-                            .clip(RoundedCornerShape(15.dp))
-                            .clickable { onDismiss() }
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
+
+                    AsyncImage(
+                        model = pokemonImageUrl,
+                        contentDescription = null,
+                        modifier = Modifier.size(120.dp),
+                        onSuccess = { imageState->
+                            val bitmap = (imageState.result.drawable as BitmapDrawable).bitmap
+                            dominantColor = Color(getDominantColor(bitmap))
+                        }
+                    )
+                    /*Image(
+                        painter = painterResource(R.drawable.ic_launcher_background),
+                        contentDescription = null,
+                        modifier = Modifier.size(120.dp)
+                    )*/
+
+                    Spacer(Modifier.height(16.dp))
                 }
 
-                AsyncImage(
-                    model = pokemonImageUrl,
-                    contentDescription = null,
-                    modifier = Modifier.size(120.dp),
-                    onSuccess = { imageState->
-                        val bitmap = (imageState.result.drawable as BitmapDrawable).bitmap
-                        dominantColor = Color(getDominantColor(bitmap))
+                Text(
+                    text = pokemonDetails.name,
+                    color = if(isDarkTheme) WhiteIceColor else DarkGrayColor,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 8.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    if(pokemonDetails.types.isNotEmpty()) {
+                        PokemonTypeContainer(
+                            pokemonType = pokemonDetails.types[0]
+                        )
                     }
-                )
-                /*Image(
-                    painter = painterResource(R.drawable.ic_launcher_background),
-                    contentDescription = null,
-                    modifier = Modifier.size(120.dp)
-                )*/
 
-                Spacer(Modifier.height(16.dp))
-            }
+                    if(pokemonDetails.types.size == 2) {
+                        Spacer(Modifier.width(16.dp))
 
-            Text(
-                text = pokemonDetails.name,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 8.dp)
-            )
+                        PokemonTypeContainer(
+                            pokemonType = pokemonDetails.types[1]
+                        )
+                    }
+                }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                if(pokemonDetails.types.isNotEmpty()) {
-                    PokemonTypeContainer(
-                        pokemonType = pokemonDetails.types[0]
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    PokemonInfoContainer(
+                        value = pokemonDetails.weight,
+                        valueSuffix = "KG",
+                        label = "Weight",
+                        isDarkTheme = isDarkTheme
+                    )
+
+                    PokemonInfoContainer(
+                        value = pokemonDetails.height,
+                        valueSuffix = "M",
+                        label = "Height",
+                        isDarkTheme = isDarkTheme
                     )
                 }
 
-                if(pokemonDetails.types.size == 2) {
-                    Spacer(Modifier.width(16.dp))
-
-                    PokemonTypeContainer(
-                        pokemonType = pokemonDetails.types[1]
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                PokemonInfoContainer(
-                    value = pokemonDetails.weight,
-                    valueSuffix = "KG",
-                    label = "Weight"
+                Text(
+                    text = "Base Stats",
+                    color = if(isDarkTheme) Color.White.copy(alpha = 0.75f) else DarkGrayColor,
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-                PokemonInfoContainer(
-                    value = pokemonDetails.height,
-                    valueSuffix = "M",
-                    label = "Height"
+                PokemonStatsContainer(
+                    pokemonStatsList = pokemonStatsList,
+                    isDarkTheme = isDarkTheme,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
-
-            Text(
-                text = "Base Stats",
-                color = Color.White.copy(alpha = 0.75f),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            PokemonStatsContainer(
-                pokemonStatsList = pokemonStatsList,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
         }
     }
 }
 
-@Preview
+@Preview(name = "Light Theme", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-private fun PokemonDetailsPreview() {
+private fun PokemonDetailsLightPreview() {
     AgileDexTheme {
         val pokemonDetails = PokemonDetails(
             id = 1,
@@ -248,7 +267,48 @@ private fun PokemonDetailsPreview() {
         PokemonDetails(
             pokemonDetails = pokemonDetails,
             pokemonImageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-            onDismiss = {}
+            isDarkTheme = false,
+            isError = Pair(false, "")
+        )
+    }
+}
+
+@Preview(name = "Dark Theme", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun PokemonDetailsDarkPreview() {
+    AgileDexTheme {
+        val pokemonDetails = PokemonDetails(
+            id = 1,
+            order = 1,
+            name = "bulbasaur",
+            baseExperience = 550,
+            types = listOf("GRASS", "POISON"),
+            weight = 69,
+            height = 7,
+            baseStats = listOf(
+                PokemonStats(
+                    name = "hp",
+                    progress = Pair(45,300)
+                ),
+                PokemonStats(
+                    name = "attack",
+                    progress = Pair(49,300)
+                ),
+                PokemonStats(
+                    name = "defense",
+                    progress = Pair(49,300)
+                ),
+                PokemonStats(
+                    name = "speed",
+                    progress = Pair(45,300)
+                )
+            )
+        )
+        PokemonDetails(
+            pokemonDetails = pokemonDetails,
+            pokemonImageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+            isDarkTheme = true,
+            isError = Pair(false, "")
         )
     }
 }
@@ -258,22 +318,25 @@ private fun PokemonInfoContainer(
     value: Int,
     valueSuffix: String,
     label: String,
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val valueAndSuffixColor = if(isDarkTheme) Color.White else DarkGrayColor
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "$value $valueSuffix",
-            color = Color.White,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            color = valueAndSuffixColor,
+            style = MaterialTheme.typography.titleLarge
         )
 
         Text(
             text = label,
-            color = Color.Gray
+            color = Color.Gray,
+            fontFamily = PoppinsFontFamily
         )
     }
 }
@@ -285,9 +348,9 @@ fun PokemonInfoContainerPreview() {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PokemonInfoContainer(90, "KG","Weight")
+            PokemonInfoContainer(90, "KG","Weight", true)
             Spacer(Modifier.height(8.dp))
-            PokemonInfoContainer(2, "M","Height")
+            PokemonInfoContainer(2, "M","Height", false)
         }
     }
 }
@@ -297,9 +360,12 @@ fun StatsProgressBar(
     currentValue: Int,
     maxValue: Int,
     filledBarColor: Color,
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier
 ) {
     val progress = currentValue.toFloat() / maxValue.toFloat()
+    val trackColor = if(isDarkTheme) Color.White else DarkGrayColor.copy(0.3f)
+    val textColor = if(isDarkTheme) Color.Black.copy(alpha = 0.6f) else WhiteIceColor
 
     Box(
         modifier = modifier
@@ -314,15 +380,14 @@ fun StatsProgressBar(
                 .height(20.dp)
                 .clip(RoundedCornerShape(50)),
             color = filledBarColor,
-            trackColor = Color.White,
+            trackColor = trackColor
         )
 
 
         Text(
             text = "$currentValue / $maxValue",
-            color = Color.Black.copy(alpha = 0.6f),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold
+            color = textColor,
+            style = MaterialTheme.typography.titleMedium,
         )
     }
 }
@@ -334,7 +399,8 @@ fun StatsProgressBarPreview() {
         StatsProgressBar(
             currentValue = 250,
             maxValue = 300,
-            filledBarColor = Color.Red
+            filledBarColor = Color.Red,
+            isDarkTheme = false
         )
     }
 }
@@ -344,7 +410,8 @@ fun PokemonStats(
     label: String,
     currentValue: Int,
     maxValue: Int,
-    filledBarColor: Color
+    filledBarColor: Color,
+    isDarkTheme: Boolean
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -352,13 +419,15 @@ fun PokemonStats(
         Text(
             text = label,
             color = Color.Gray,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.width(40.dp)
         )
 
         StatsProgressBar(
             currentValue = currentValue,
             maxValue = maxValue,
-            filledBarColor = filledBarColor
+            filledBarColor = filledBarColor,
+            isDarkTheme = isDarkTheme
         )
     }
 }
@@ -371,7 +440,8 @@ fun PokemonStatsPreview() {
             label = "HP",
             currentValue = 180,
             maxValue = 300,
-            filledBarColor = Color.Red
+            filledBarColor = Color.Red,
+            isDarkTheme = false
         )
     }
 }
@@ -379,6 +449,7 @@ fun PokemonStatsPreview() {
 @Composable
 fun PokemonStatsContainer(
     pokemonStatsList: List<PokemonStats>,
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -397,7 +468,8 @@ fun PokemonStatsContainer(
                 label = getShortStatus(it.name).uppercase(),
                 currentValue = it.progress.first,
                 maxValue = it.progress.second,
-                filledBarColor = labelColorsMap[it.name] ?: Color.Gray
+                filledBarColor = labelColorsMap[it.name] ?: Color.Gray,
+                isDarkTheme = isDarkTheme
             )
         }
     }
@@ -432,7 +504,8 @@ fun PokemonStatsContainerPreview() {
         )
 
         PokemonStatsContainer(
-            pokemonStatsList = pokemonStatsList
+            pokemonStatsList = pokemonStatsList,
+            isDarkTheme = false
         )
     }
 }
@@ -449,7 +522,7 @@ private fun PokemonTypeContainer(
     ) {
         Text(
             text = pokemonType.uppercase(),
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.titleMedium,
             color = Color.White
         )
     }

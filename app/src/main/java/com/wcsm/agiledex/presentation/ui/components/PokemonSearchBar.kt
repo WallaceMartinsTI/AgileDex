@@ -1,8 +1,6 @@
 package com.wcsm.agiledex.presentation.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -28,10 +26,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wcsm.agiledex.presentation.ui.theme.AgileDexTheme
 import com.wcsm.agiledex.presentation.ui.theme.DarkGrayColor
+import com.wcsm.agiledex.presentation.ui.theme.PoppinsFontFamily
 import com.wcsm.agiledex.presentation.ui.theme.White06Color
 
 @Composable
 fun PokemonSearchBar(
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier,
     onFilterValueChange: (textFilter: String) -> Unit
 ) {
@@ -52,14 +52,15 @@ fun PokemonSearchBar(
             .padding(horizontal = 16.dp),
         placeholder = {
             Text(
-                text = "Digite para filtrar",
+                text = "Type to filter...",
+                fontFamily = PoppinsFontFamily
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.FilterAlt,
-                contentDescription = "Ícone de filtrar",
-                tint = DarkGrayColor,
+                contentDescription = "Filter icon",
+                tint = if(isDarkTheme) White06Color else DarkGrayColor,
             )
         },
         trailingIcon = {
@@ -93,6 +94,8 @@ fun PokemonSearchBar(
 @Composable
 private fun PokemonSeachBarPreview() {
     AgileDexTheme {
-        PokemonSearchBar {}
+        PokemonSearchBar(
+            isDarkTheme = false
+        ) {}
     }
 }

@@ -1,7 +1,7 @@
 package com.wcsm.agiledex.presentation.ui.view
 
-import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,16 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -34,23 +33,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.wcsm.agiledex.presentation.model.PokemonOperationType
 import com.wcsm.agiledex.presentation.ui.components.AgileDexTopBar
+import com.wcsm.agiledex.presentation.ui.components.ErrorContainer
 import com.wcsm.agiledex.presentation.ui.components.PokemonCard
 import com.wcsm.agiledex.presentation.ui.components.PokemonDetails
 import com.wcsm.agiledex.presentation.ui.components.PokemonSearchBar
 import com.wcsm.agiledex.presentation.ui.theme.BackgroundColor
 import com.wcsm.agiledex.presentation.ui.theme.DarkGrayColor
-import com.wcsm.agiledex.presentation.ui.theme.PrimaryColor
-import kotlinx.coroutines.coroutineScope
+import com.wcsm.agiledex.presentation.ui.theme.WhiteIceColor
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -59,12 +52,19 @@ import kotlinx.coroutines.launch
 fun PokemonView() {
     val pokemonViewModel: PokemonViewModel = hiltViewModel()
 
-    val context = LocalContext.current
-
     val pokemonList by pokemonViewModel.pokemonList.collectAsStateWithLifecycle()
     val pokemonDetails by pokemonViewModel.pokemonDetails.collectAsStateWithLifecycle()
     val uiState by pokemonViewModel.uiState.collectAsStateWithLifecycle()
     val isFetchingMorePokemons by pokemonViewModel.isFetching.collectAsStateWithLifecycle()
+    val isFirstScreenLoading by pokemonViewModel.isFirstScreenLoading.collectAsStateWithLifecycle()
+    val isErrorGettingPokemons by pokemonViewModel.isErrorGettingPokemons.collectAsStateWithLifecycle()
+    val isErrorGettingPokemonDetails by pokemonViewModel.isErrorGettingPokemonDetails.collectAsStateWithLifecycle()
+
+    var selectedPokemonImageUrl by remember { mutableStateOf("") }
+
+    var showPokemonDetails by remember { mutableStateOf(false) }
+    var canLoadMorePokemons by remember { mutableStateOf(true) }
+    var isFilteringPokemons by remember { mutableStateOf(false) }
 
     val lazyGridState = rememberLazyGridState()
 
@@ -73,40 +73,7 @@ fun PokemonView() {
     )
     val scope = rememberCoroutineScope()
 
-    var showPokemonDetails by remember { mutableStateOf(false) }
-    var selectedPokemonImageUrl by remember { mutableStateOf("") }
-
-    var isLoadingPokemonList by remember {
-        mutableStateOf(
-            uiState.isLoading && uiState.pokemonOperationType == PokemonOperationType.GET_POKEMONS
-        )
-    }
-
-    var isLoadingPokemonDetails by remember {
-        mutableStateOf(
-            uiState.isLoading && uiState.pokemonOperationType == PokemonOperationType.GET_POKEMON_DETAILS
-        )
-    }
-
-    var canLoadMorePokemons by remember { mutableStateOf(true) }
-    var isFilteringPokemons by remember { mutableStateOf(false) }
-
     LaunchedEffect(uiState) {
-        uiState.error?.let { responseErrorMessage ->
-            Toast.makeText(context, responseErrorMessage, Toast.LENGTH_SHORT).show()
-        }
-
-        uiState.pokemonOperationType?.let { operationType ->
-            when(operationType) {
-                PokemonOperationType.GET_POKEMONS -> {
-                    isLoadingPokemonList = uiState.isLoading
-                }
-                PokemonOperationType.GET_POKEMON_DETAILS -> {
-                    isLoadingPokemonDetails = uiState.isLoading
-                }
-            }
-        }
-
         if(uiState.success) {
             pokemonViewModel.resetUiState()
         }
@@ -145,7 +112,7 @@ fun PokemonView() {
                 .padding(paddingValues)
                 .background(BackgroundColor)
         ) {
-            if(pokemonList.isEmpty() && isLoadingPokemonList) { // If is first loading
+            if(isFirstScreenLoading) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -156,36 +123,15 @@ fun PokemonView() {
                     CircularProgressIndicator(Modifier.size(80.dp))
                 }
             }
-            if(!isLoadingPokemonList && uiState.error?.isNotBlank() == true) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "There was a problem.",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
-                    )
-                    Text(
-                        text = uiState.error!!,
-                        color = PrimaryColor,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(280.dp)
-                    )
 
-                    Button(
-                        onClick = {
-                            pokemonViewModel.resetUiState()
-                            pokemonViewModel.getPokemons()
-                        },
-                        modifier = Modifier.padding(top = 16.dp)
-                    ) {
-                        Text("TRY AGAIN")
-                    }
+            if(isErrorGettingPokemons) {
+                ErrorContainer(
+                    errorTitle = "There was a problem.",
+                    errorMessage = uiState.error ?: "",
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    pokemonViewModel.resetUiState()
+                    pokemonViewModel.getPokemons()
                 }
             }
 
@@ -195,6 +141,7 @@ fun PokemonView() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     PokemonSearchBar(
+                        isDarkTheme = isSystemInDarkTheme(),
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                         onFilterValueChange = { textFilter ->
                             isFilteringPokemons = textFilter.isNotEmpty()
@@ -216,6 +163,7 @@ fun PokemonView() {
                             PokemonCard(
                                 pokemon = pokemon,
                                 imageUrl = pokemon.spriteUrl,
+                                isDarkTheme = isSystemInDarkTheme(),
                                 modifier = Modifier.padding(4.dp),
                                 onPokemonCardClick = {
                                     pokemonViewModel.getPokemonDetails(pokemon.name)
@@ -223,6 +171,22 @@ fun PokemonView() {
                                     showPokemonDetails = true
                                 }
                             )
+                        }
+
+                        if(pokemonList.isEmpty() && isFilteringPokemons) {
+                            item(span = { GridItemSpan(3) }) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "No pokemon found.",
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                }
+                            }
                         }
 
                         if(isFetchingMorePokemons) {
@@ -253,30 +217,22 @@ fun PokemonView() {
                         }
                     }
 
+                    pokemonViewModel.resetUiState()
                     pokemonViewModel.resetPokemonDetails()
                 },
                 sheetState = sheetState,
-                containerColor = DarkGrayColor,
+                containerColor = WhiteIceColor,
                 dragHandle = {
                     BottomSheetDefaults.DragHandle(
-                        color = Color.White
+                        color = DarkGrayColor
                     )
                 }
             ) {
                 PokemonDetails(
                     pokemonDetails = pokemonDetails,
                     pokemonImageUrl = selectedPokemonImageUrl,
-                    onDismiss = {
-                        selectedPokemonImageUrl = ""
-
-                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                showPokemonDetails = false
-                            }
-                        }
-
-                        pokemonViewModel.resetPokemonDetails()
-                    }
+                    isDarkTheme = isSystemInDarkTheme(),
+                    isError = Pair(isErrorGettingPokemonDetails, uiState.error ?: "")
                 )
             }
         }
