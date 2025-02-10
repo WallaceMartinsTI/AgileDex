@@ -12,30 +12,30 @@ Pokémon, including an image and various attributes.
     <table>
       <tr>
         <td>
-          <img src="./pokemon_view_light.png" alt="pokemon view light" width="300" height="600"/>
+          <img src="./pokemon_view_light.png" alt="pokemon view light" width="300" height="500"/>
         </td>
         <td>
-          <img src="./pokemon_details_light.png" alt="pokemon detail light" width="300" height="600"/>
+          <img src="./pokemon_details_light.png" alt="pokemon detail light" width="300" height="500"/>
         </td>
 <td>
-          <img src="./pokemon_view_dark.png" alt="pokemon view dark" width="300" height="600"/>
+          <img src="./pokemon_view_dark.png" alt="pokemon view dark" width="300" height="500"/>
         </td>
         <td>
-          <img src="./pokemon_detail_dark.png" alt="pokemon detail dark" width="300" height="600"/>
+          <img src="./pokemon_detail_dark.png" alt="pokemon detail dark" width="300" height="500"/>
         </td>
       </tr>
 <tr>
         <td>
-          <img src="./splashscreen.png" alt="splash screen" width="300" height="600"/>
+          <img src="./splashscreen.png" alt="splash screen" width="300" height="500"/>
         </td>
         <td>
-          <img src="./pokemon_view_error.png" alt="pokemon view error" width="300" height="600"/>
+          <img src="./pokemon_view_error.png" alt="pokemon view error" width="300" height="500"/>
         </td>
 <td>
-          <img src="./pokemon_detail_error.png" alt="pokemon detail error" width="300" height="600"/>
+          <img src="./pokemon_detail_error.png" alt="pokemon detail error" width="300" height="500"/>
         </td>
         <td>
-          <img src="./pokemon_view_no_filter_result.png" alt="pokemon view no filter result" width="300" height="600"/>
+          <img src="./pokemon_view_no_filter_result.png" alt="pokemon view no filter result" width="300" height="500"/>
         </td>
       </tr>
 <tr>
