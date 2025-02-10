@@ -84,7 +84,7 @@ git clone https://github.com/WallaceMartinsTI/AgileDex.git
 
 2. Open the project in Android Studio.
 
-4. Build and run the application on an emulator or physical device.
+3. gitBuild and run the application on an emulator or physical device.
 
 ## 🧾 Final Notes
 
