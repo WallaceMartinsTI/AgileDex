@@ -75,7 +75,6 @@ fun PokemonView() {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        Log.i("#-# TESTE #-#", "CHAMOU UNIT")
         pokemonViewModel.resetOffset()
         pokemonViewModel.getPokemons()
     }
