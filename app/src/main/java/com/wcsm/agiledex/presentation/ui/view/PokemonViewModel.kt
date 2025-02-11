@@ -61,6 +61,10 @@ class PokemonViewModel @Inject constructor(
         _uiState.value = UiState()
     }
 
+    fun resetOffset() {
+        offset = 0
+    }
+
     private fun updateUiState(newUiState: UiState<PokemonOperationType>) {
         _uiState.value = newUiState
         onUiStateChange()

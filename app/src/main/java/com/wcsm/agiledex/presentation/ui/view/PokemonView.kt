@@ -1,5 +1,6 @@
 package com.wcsm.agiledex.presentation.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -74,6 +75,8 @@ fun PokemonView() {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
+        Log.i("#-# TESTE #-#", "CHAMOU UNIT")
+        pokemonViewModel.resetOffset()
         pokemonViewModel.getPokemons()
     }
 
