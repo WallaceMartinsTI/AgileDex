@@ -11,12 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.wcsm.agiledex.presentation.ui.theme.AgileDexTheme
 import com.wcsm.agiledex.presentation.ui.theme.PrimaryColor
 import com.wcsm.agiledex.presentation.ui.theme.ThemeBackgroundColor
 import com.wcsm.agiledex.presentation.ui.theme.WhiteIceColor
 import com.wcsm.agiledex.presentation.ui.view.PokemonView
+import com.wcsm.agiledex.presentation.ui.view.PokemonViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

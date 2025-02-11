@@ -73,6 +73,10 @@ fun PokemonView() {
     )
     val scope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        pokemonViewModel.getPokemons()
+    }
+
     LaunchedEffect(uiState) {
         if(uiState.success) {
             pokemonViewModel.resetUiState()

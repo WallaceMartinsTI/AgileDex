@@ -96,9 +96,13 @@ dependencies {
 
     // Mockito
     testImplementation(libs.mockito.core)
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
 
     // Coroutine Testing
     testImplementation(libs.kotlinx.coroutines.test)
+
+    // Core Testing
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 
     // Truth
     implementation(libs.truth)

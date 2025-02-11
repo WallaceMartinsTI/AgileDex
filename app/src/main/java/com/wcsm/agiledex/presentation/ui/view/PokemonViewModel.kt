@@ -54,7 +54,7 @@ class PokemonViewModel @Inject constructor(
     private var maxPokemons = 300
 
     init {
-        getPokemons()
+        //getPokemons()
     }
 
     fun resetUiState() {
