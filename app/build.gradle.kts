@@ -74,9 +74,6 @@ dependencies {
     // Extended Icons
     implementation(libs.androidx.material.icons.extended)
 
-    // Compose Paging
-    implementation(libs.androidx.paging.compose)
-
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
