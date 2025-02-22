@@ -53,10 +53,6 @@ class PokemonViewModel @Inject constructor(
     private var limit = 30
     private var maxPokemons = 300
 
-    init {
-        //getPokemons()
-    }
-
     fun resetUiState() {
         _uiState.value = UiState()
     }
@@ -183,7 +179,9 @@ class PokemonViewModel @Inject constructor(
                         getPokemonDetailsResponse.data?.let { pokemonDetailsData ->
                             _pokemonDetails.value = pokemonDetailsData
 
-                            _cachedPokemonDetails.value += (pokemonName to pokemonDetailsData)
+                            _cachedPokemonDetails.value = _cachedPokemonDetails.value.toMutableMap().apply {
+                                put(pokemonName, pokemonDetailsData)
+                            }
 
                             updateUiState(uiState.value.copy(isLoading =  false, success = true))
                         }
